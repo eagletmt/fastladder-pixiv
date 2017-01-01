@@ -14,5 +14,5 @@ mod search_by_tag;
 mod util;
 
 pub use self::feed::Feed;
-pub use self::util::extract_pubdate;
 pub use self::search_by_tag::search_by_tag;
+pub use self::util::extract_pubdate;
