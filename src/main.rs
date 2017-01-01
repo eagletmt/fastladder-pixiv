@@ -9,23 +9,37 @@ extern crate env_logger;
 extern crate log;
 extern crate rustc_serialize;
 extern crate url;
+#[macro_use]
+extern crate clap;
 
 use std::io::Read;
 use select::predicate::Predicate;
 use chrono::TimeZone;
-use std::io::Write;
 
 fn main() {
     env_logger::init().unwrap();
 
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() == 1 {
-        let _ = writeln!(&mut std::io::stderr(), "Usage: {} WORD", args[0]);
-        std::process::exit(1);
-    }
-
+    let app = clap_app!(myapp =>
+        (@subcommand word =>
+            (about: "Search illustrations by tag")
+            (@arg WORD: +required +multiple "Word")
+        )
+    );
+    let matches = app.clone().get_matches();
     let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
-    let feeds = search_by_tag(&base_url, &args[1]);
+
+    let feeds: Vec<Feed> = match matches.subcommand() {
+        ("word", Some(word_command)) => {
+            word_command.values_of("WORD")
+                .unwrap()
+                .flat_map(|word| search_by_tag(&base_url, word))
+                .collect()
+        }
+        _ => {
+            let _ = app.write_help(&mut std::io::stderr());
+            std::process::exit(1);
+        }
+    };
     println!("{}",
              rustc_serialize::json::encode(&feeds).expect("Unable to encode feeds into JSON"));
 }

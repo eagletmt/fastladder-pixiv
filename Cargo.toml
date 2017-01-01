@@ -5,6 +5,7 @@ authors = ["Kohei Suzuki <eagletmt@gmail.com>"]
 
 [dependencies]
 chrono = "0.2"
+clap = "2.19"
 env_logger = "0.3"
 hyper = "0.9"
 lazy_static = "0.2"
