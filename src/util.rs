@@ -46,12 +46,12 @@ pub fn from_image_item(url: &url::Url, feedtitle: &str, doc: &select::document::
         let pubdate = super::util::extract_pubdate(thumb);
         let feed = super::Feed {
             feedlink: url.to_string(),
-            feedtitle: feedtitle.to_string(),
-            author: user.to_string(),
-            title: title.to_string(),
+            feedtitle: feedtitle.to_owned(),
+            author: user.to_owned(),
+            title: title.to_owned(),
             body: format!("<img src=\"{}\"/>", thumb),
             link: link.to_string(),
-            category: "PxFeed".to_string(),
+            category: "PxFeed".to_owned(),
             published_date: pubdate.to_string(),
         };
         feeds.push(feed)

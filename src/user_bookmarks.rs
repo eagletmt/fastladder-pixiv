@@ -27,12 +27,12 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Ve
         let link = url.join(link_node.attr("href").expect("href does not exist in a.work node")).expect("Unable to join href in a.work node");
         feeds.push(super::Feed {
             feedlink: url.to_string(),
-            feedtitle: feedtitle.to_string(),
-            author: user.to_string(),
+            feedtitle: feedtitle.to_owned(),
+            author: user.to_owned(),
             title: title,
             body: format!("<img src=\"{}\"/>", thumb),
             link: link.to_string(),
-            category: "PxFeed".to_string(),
+            category: "PxFeed".to_owned(),
             published_date: super::util::extract_pubdate(thumb).to_string(),
         });
     }
