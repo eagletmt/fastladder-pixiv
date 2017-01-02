@@ -9,6 +9,7 @@ fn main() {
     env_logger::init().unwrap();
 
     let app = clap_app!(myapp =>
+        (@arg dry_run: -n "dry-run")
         (@subcommand word =>
             (about: "Search illustrations by tag")
             (@arg WORD: +required +multiple "Word"))
@@ -19,6 +20,7 @@ fn main() {
             (@arg USER_ID: +required +multiple "user id"))
     );
     let matches = app.clone().get_matches();
+    let dry_run = matches.is_present("dry_run");
     let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
 
     let feeds: Vec<fastladder_pixiv::Feed> = match matches.subcommand() {
@@ -41,6 +43,14 @@ fn main() {
             std::process::exit(1);
         }
     };
-    println!("{}",
-             rustc_serialize::json::encode(&feeds).expect("Unable to encode feeds into JSON"));
+    if dry_run {
+        println!("{}",
+                 rustc_serialize::json::encode(&feeds).expect("Unable to encode feeds into JSON"));
+    } else {
+        let api_key = std::env::var("FASTLADDER_API_KEY").expect("FASTLADDER_API_KEY is required to post feeds");
+        let fastladder_url = std::env::var("FASTLADDER_URL").expect("FASTLADDER_URL is required to post feeds");
+        let fastladder = fastladder_pixiv::Fastladder::new(url::Url::parse(&fastladder_url).expect("Unparsable FASTLADDER_URL"),
+                                                           api_key);
+        fastladder.post_feeds(&feeds);
+    }
 }
