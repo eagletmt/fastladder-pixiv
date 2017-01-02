@@ -36,6 +36,7 @@ pub fn from_image_item(url: &url::Url, feedtitle: &str, doc: &select::document::
             .expect("Unable to find thumbnail node");
         let thumb = thumb_node.attr("data-src")
             .expect("data-src attribute does not exist in thumbnail node");
+        let thumb_url = url::Url::parse(thumb).expect("data-src in thumbnail node is unparsable");
         let user_node = li.find(select::predicate::Class("user")).first().expect("Unable to find user node");
         let user = user_node.attr("title").expect("title attribute does not exist in user node");
         let link_node = li.find(select::predicate::Class("work").and(select::predicate::Name("a")))
@@ -49,7 +50,7 @@ pub fn from_image_item(url: &url::Url, feedtitle: &str, doc: &select::document::
             feedtitle: feedtitle.to_owned(),
             author: user.to_owned(),
             title: title.to_owned(),
-            body: format!("<img src=\"{}\"/>", thumb),
+            thumb_url: thumb_url,
             link: link.to_string(),
             category: "PxFeed".to_owned(),
             published_date: pubdate.to_string(),

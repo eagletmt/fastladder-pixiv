@@ -43,6 +43,7 @@ fn main() {
             std::process::exit(1);
         }
     };
+    let feeds = feeds.into_iter().map(|feed| replace_host(feed)).collect();
     if dry_run {
         println!("{}",
                  rustc_serialize::json::encode(&feeds).expect("Unable to encode feeds into JSON"));
@@ -53,4 +54,15 @@ fn main() {
                                                            api_key);
         fastladder.post_feeds(&feeds);
     }
+}
+
+fn replace_host(feed: fastladder_pixiv::Feed) -> fastladder_pixiv::Feed {
+    let mut replaced = feed;
+    if let Ok(replace_url_str) = std::env::var("REPLACE_URL") {
+        if let Ok(replace_url) = url::Url::parse(&replace_url_str) {
+            replaced.thumb_url.set_host(replace_url.host_str()).expect("Unable to replace host");
+            replaced.thumb_url.set_scheme(replace_url.scheme()).expect("Unable to replace scheme");
+        }
+    }
+    return replaced;
 }
