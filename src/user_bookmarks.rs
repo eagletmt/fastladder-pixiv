@@ -25,20 +25,24 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Re
             let thumb_node = li.find(select::predicate::Name("img")).first().expect("Unable to find thumbnail node");
             let thumb = thumb_node.attr("data-src").expect("data-src does not exist in thumbnail node");
             let thumb_url = url::Url::parse(thumb).expect("data-src in thumbnail node is unparsable");
-            let user_node = li.find(select::predicate::Class("user")).first().expect("Unable to find user node");
-            let user = user_node.attr("data-user_name").expect("data-user_name does not exist in user node");
-            let link_node = li.find(select::predicate::Class("work").and(select::predicate::Name("a"))).first().expect("Unable to find a.work node");
-            let link = url.join(link_node.attr("href").expect("href does not exist in a.work node")).expect("Unable to join href in a.work node");
-            feeds.push(super::Feed {
-                feedlink: url.to_string(),
-                feedtitle: feedtitle.to_owned(),
-                author: user.to_owned(),
-                title: title,
-                thumb_url: thumb_url,
-                link: link.to_string(),
-                category: "PxFeed".to_owned(),
-                published_date: super::util::extract_pubdate(thumb).to_string(),
-            });
+            if let Some(link_node) = li.find(select::predicate::Class("work").and(select::predicate::Name("a"))).first() {
+                let link = url.join(link_node.attr("href").expect("href does not exist in a.work node")).expect("Unable to join href in a.work node");
+                let user_node = li.find(select::predicate::Class("user")).first().expect("Unable to find user node");
+                let user = user_node.attr("data-user_name").expect("data-user_name does not exist in user node");
+                feeds.push(super::Feed {
+                    feedlink: url.to_string(),
+                    feedtitle: feedtitle.to_owned(),
+                    author: user.to_owned(),
+                    title: title,
+                    thumb_url: thumb_url,
+                    link: link.to_string(),
+                    category: "PxFeed".to_owned(),
+                    published_date: super::util::extract_pubdate(thumb).to_string(),
+                });
+            } else {
+                warn!("Found invisible illustration at {}",
+                      li.attr("id").unwrap_or("???"));
+            }
         }
         return Ok(feeds);
     } else {
