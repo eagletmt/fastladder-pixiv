@@ -6,7 +6,7 @@ extern crate url;
 use select::predicate::Predicate;
 use std::io::Read;
 
-pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Vec<super::Feed> {
+pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Result<Vec<super::Feed>, String> {
     let mut url = base_url.join("/bookmark.php").unwrap();
     url.query_pairs_mut().append_pair("id", user_id);
     let feedtitle = format!("PxFeed - Bookmarks by {}", user_id);
@@ -40,11 +40,11 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Ve
                 published_date: super::util::extract_pubdate(thumb).to_string(),
             });
         }
-        return feeds;
+        return Ok(feeds);
     } else {
         // TODO: return Result
-        panic!(format!("fastladder/rpc/update_feeds returned {}: {}",
-                       res.status,
-                       body));
+        return Err(format!("fastladder/rpc/update_feeds returned {}: {}",
+                           res.status,
+                           body));
     }
 }

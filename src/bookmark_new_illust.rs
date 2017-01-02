@@ -5,7 +5,7 @@ extern crate url;
 
 use std::io::Read;
 
-pub fn bookmark_new_illust(base_url: &url::Url, phpsessid: &str) -> Vec<super::Feed> {
+pub fn bookmark_new_illust(base_url: &url::Url, phpsessid: &str) -> Result<Vec<super::Feed>, String> {
     let url = base_url.join("/bookmark_new_illust.php").unwrap();
     let feedtitle = "PxFeed - bookmark new illust";
     let mut client = hyper::Client::new();
@@ -16,9 +16,9 @@ pub fn bookmark_new_illust(base_url: &url::Url, phpsessid: &str) -> Vec<super::F
     let _ = res.read_to_string(&mut body).expect("Failed to read body");
     if res.status == hyper::status::StatusCode::Ok {
         let doc = select::document::Document::from(&*body);
-        return super::util::from_image_item(&url, feedtitle, &doc);
+        return Ok(super::util::from_image_item(&url, feedtitle, &doc));
     } else {
         // TODO: return Result
-        panic!(format!("/bookmark_new_illust.php returned {}: {}", res.status, body));
+        return Err(format!("/bookmark_new_illust.php returned {}: {}", res.status, body));
     }
 }
