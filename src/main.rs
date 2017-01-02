@@ -11,7 +11,7 @@ fn main() {
     env_logger::init().unwrap();
 
     let app = clap_app!(fastladder_pixiv =>
-        (version: "0.1.0")
+        (version: "0.1.1")
         (about: "Post pixiv feeds to fastladder")
         (@arg dry_run: -n "dry-run")
         (@subcommand word =>
