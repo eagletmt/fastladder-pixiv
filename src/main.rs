@@ -5,6 +5,8 @@ extern crate url;
 #[macro_use]
 extern crate clap;
 
+use std::io::Write;
+
 fn main() {
     env_logger::init().unwrap();
 
@@ -40,6 +42,7 @@ fn main() {
         }
         _ => {
             let _ = app.write_help(&mut std::io::stderr());
+            let _ = std::io::stderr().write(b"\n");
             std::process::exit(1);
         }
     };
