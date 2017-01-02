@@ -10,7 +10,9 @@ use std::io::Write;
 fn main() {
     env_logger::init().unwrap();
 
-    let app = clap_app!(myapp =>
+    let app = clap_app!(fastladder_pixiv =>
+        (version: "0.1.0")
+        (about: "Post pixiv feeds to fastladder")
         (@arg dry_run: -n "dry-run")
         (@subcommand word =>
             (about: "Search illustrations by tag")
