@@ -27,7 +27,7 @@ fn main() {
     let dry_run = matches.is_present("dry_run");
     let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
 
-    let feeds: Vec<fastladder_pixiv::Feed> = match matches.subcommand() {
+    let feeds = match matches.subcommand() {
         ("word", Some(word_command)) => {
             word_command.values_of("WORD")
                 .unwrap()

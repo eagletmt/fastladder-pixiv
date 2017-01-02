@@ -2,6 +2,8 @@ extern crate hyper;
 extern crate rustc_serialize;
 extern crate url;
 
+use std::io::Read;
+
 pub struct Fastladder {
     base_url: url::Url,
     api_key: String,
@@ -23,6 +25,14 @@ impl Fastladder {
             .append_pair("feeds",
                          &rustc_serialize::json::encode(feeds).expect("Unable to encode feeds into JSON"))
             .finish();
-        let _ = client.post(url).body(&request_body).send().expect("Failed to get");
+        let mut res = client.post(url).body(&request_body).send().expect("Failed to get");
+        let mut response_body = String::new();
+        let _ = res.read_to_string(&mut response_body).expect("Failed to read body");
+        if res.status != hyper::status::StatusCode::Ok {
+            // TODO: return Result
+            panic!(format!("fastladder/rpc/update_feeds returned {}: {}",
+                           res.status,
+                           response_body));
+        }
     }
 }
