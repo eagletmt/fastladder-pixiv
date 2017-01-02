@@ -14,6 +14,9 @@ fn main() {
             (@arg WORD: +required +multiple "Word"))
         (@subcommand bookmark =>
             (about: "Get new illustrations from following users"))
+        (@subcommand user =>
+            (about: "Get new illustrations from user's bookmark")
+            (@arg USER_ID: +required +multiple "user id"))
     );
     let matches = app.clone().get_matches();
     let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
@@ -28,6 +31,10 @@ fn main() {
         ("bookmark", Some(_)) => {
             fastladder_pixiv::bookmark_new_illust(&base_url,
                                                   &std::env::var("PIXIV_PHPSESSID").expect("PHPSESSID is required for bookmark subcommand"))
+        }
+        ("user", Some(user_command)) => {
+            let phpsessid = std::env::var("PIXIV_PHPSESSID").expect("PHPSESSID is required for bookmark subcommand");
+            user_command.values_of("USER_ID").unwrap().flat_map(|user_id| fastladder_pixiv::user_bookmarks(&base_url, &phpsessid, user_id)).collect()
         }
         _ => {
             let _ = app.write_help(&mut std::io::stderr());

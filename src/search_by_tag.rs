@@ -1,6 +1,5 @@
 extern crate hyper;
 extern crate select;
-extern crate std;
 extern crate url;
 
 use std::io::Read;

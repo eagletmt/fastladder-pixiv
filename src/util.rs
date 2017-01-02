@@ -1,7 +1,6 @@
 extern crate chrono;
 extern crate regex;
 extern crate select;
-extern crate std;
 extern crate url;
 
 use chrono::TimeZone;
@@ -28,7 +27,7 @@ pub fn extract_pubdate(thumb: &str) -> chrono::DateTime<chrono::Local> {
 }
 
 pub fn from_image_item(url: &url::Url, feedtitle: &str, doc: &select::document::Document) -> Vec<super::Feed> {
-    let mut feeds = std::vec::Vec::new();
+    let mut feeds = Vec::new();
     for li in doc.find(select::predicate::Class("image-item")).iter() {
         let title_node = li.find(select::predicate::Class("title")).first().expect("Unable to find title node");
         let title = title_node.attr("title").expect("title attribute does not exist in title node");
