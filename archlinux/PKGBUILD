@@ -1,0 +1,22 @@
+# Maintainer: Kohei Suzuki <eagletmt@gmail.com>
+pkgname=fastladder-pixiv
+pkgver=0.1.0
+pkgrel=1
+arch=('i686' 'x86_64')
+url='https://github.com/eagletmt/fastladder-pixiv'
+license=('MIT')
+depends=('openssl')
+makedepends=('cargo')
+source=("https://github.com/eagletmt/$pkgname/archive/v$pkgver.tar.gz")
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --locked
+}
+package() {
+  cd "$pkgname-$pkgver"
+  mkdir -p "$pkgdir/usr/bin"
+  install -m755 target/release/fastladder-pixiv "$pkgdir/usr/bin/"
+}
+
+sha512sums=('c1ce57cfded7c24f1948eef7d0fc3f5750e2e9961ff6c353f614e0be16f6fbf625465ded5a39e3abb5bbe81b3948354589a166b610504c7e7c640f3e7e29ddad')
