@@ -11,8 +11,9 @@ fn main() {
     let app = clap_app!(myapp =>
         (@subcommand word =>
             (about: "Search illustrations by tag")
-            (@arg WORD: +required +multiple "Word")
-        )
+            (@arg WORD: +required +multiple "Word"))
+        (@subcommand bookmark =>
+            (about: "Get new illustrations from following users"))
     );
     let matches = app.clone().get_matches();
     let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
@@ -23,6 +24,10 @@ fn main() {
                 .unwrap()
                 .flat_map(|word| fastladder_pixiv::search_by_tag(&base_url, word))
                 .collect()
+        }
+        ("bookmark", Some(_)) => {
+            fastladder_pixiv::bookmark_new_illust(&base_url,
+                                                  &std::env::var("PIXIV_PHPSESSID").expect("PHPSESSID is required for bookmark subcommand"))
         }
         _ => {
             let _ = app.write_help(&mut std::io::stderr());
