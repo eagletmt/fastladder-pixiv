@@ -1,6 +1,6 @@
 extern crate env_logger;
 extern crate fastladder_pixiv;
-extern crate rustc_serialize;
+extern crate serde_json;
 extern crate url;
 #[macro_use]
 extern crate clap;
@@ -32,7 +32,7 @@ fn main() {
             let feeds = feeds.into_iter().map(|feed| replace_host(feed)).collect();
             if dry_run {
                 println!("{}",
-                         rustc_serialize::json::encode(&feeds).expect("Unable to encode feeds into JSON"));
+                         serde_json::to_string(&feeds).expect("Unable to encode feeds into JSON"));
             } else {
                 let api_key = std::env::var("FASTLADDER_API_KEY").expect("FASTLADDER_API_KEY is required to post feeds");
                 let fastladder_url = std::env::var("FASTLADDER_URL").expect("FASTLADDER_URL is required to post feeds");

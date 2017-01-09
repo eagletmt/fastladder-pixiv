@@ -1,4 +1,4 @@
-extern crate rustc_serialize;
+extern crate serde;
 extern crate url;
 
 #[derive(Debug)]
@@ -13,20 +13,20 @@ pub struct Feed {
     pub published_date: String,
 }
 
-impl rustc_serialize::Encodable for Feed {
-    fn encode<S: rustc_serialize::Encoder>(&self, s: &mut S) -> Result<(), S::Error> {
-        s.emit_struct("Feed", 8, |s| {
-            try!(s.emit_struct_field("feedlink", 0, |s| self.feedlink.encode(s)));
-            try!(s.emit_struct_field("feedtitle", 1, |s| self.feedtitle.encode(s)));
-            try!(s.emit_struct_field("author", 2, |s| self.author.encode(s)));
-            try!(s.emit_struct_field("title", 3, |s| self.title.encode(s)));
-            try!(s.emit_struct_field("body",
-                                     4,
-                                     |s| format!("<img src=\"{}\"/>", self.thumb_url).encode(s)));
-            try!(s.emit_struct_field("link", 5, |s| self.link.encode(s)));
-            try!(s.emit_struct_field("category", 6, |s| self.category.encode(s)));
-            try!(s.emit_struct_field("published_date", 7, |s| self.published_date.encode(s)));
-            Ok(())
-        })
+impl serde::Serialize for Feed {
+    fn serialize<S: serde::Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
+        let mut state = try!(serializer.serialize_struct("Feed", 8));
+        try!(serializer.serialize_struct_elt(&mut state, "feedlink", &self.feedlink));
+        try!(serializer.serialize_struct_elt(&mut state, "feedtitle", &self.feedtitle));
+        try!(serializer.serialize_struct_elt(&mut state, "author", &self.author));
+        try!(serializer.serialize_struct_elt(&mut state, "title", &self.title));
+        try!(serializer.serialize_struct_elt(&mut state,
+                                             "body",
+                                             format!("<img src=\"{}\"/>", self.thumb_url)));
+        try!(serializer.serialize_struct_elt(&mut state, "link", &self.link));
+        try!(serializer.serialize_struct_elt(&mut state, "category", &self.category));
+        try!(serializer.serialize_struct_elt(&mut state, "published_date", &self.published_date));
+        try!(serializer.serialize_struct_end(state));
+        return Ok(());
     }
 }

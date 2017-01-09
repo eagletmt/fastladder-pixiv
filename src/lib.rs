@@ -2,8 +2,8 @@ extern crate chrono;
 extern crate cookie;
 extern crate hyper;
 extern crate regex;
-extern crate rustc_serialize;
 extern crate select;
+extern crate serde_json;
 extern crate url;
 #[macro_use]
 extern crate lazy_static;

@@ -1,5 +1,5 @@
 extern crate hyper;
-extern crate rustc_serialize;
+extern crate serde_json;
 extern crate url;
 
 use std::io::Read;
@@ -23,7 +23,7 @@ impl Fastladder {
         let request_body = url::form_urlencoded::Serializer::new(String::new())
             .append_pair("api_key", &self.api_key)
             .append_pair("feeds",
-                         &rustc_serialize::json::encode(feeds).expect("Unable to encode feeds into JSON"))
+                         &serde_json::to_string(feeds).expect("Unable to encode feeds into JSON"))
             .finish();
         let mut res = client.post(url).body(&request_body).send().expect("Failed to get");
         let mut response_body = String::new();
