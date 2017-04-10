@@ -29,7 +29,10 @@ fn main() {
 
     match run_subcommand(&base_url, &app, matches.subcommand()) {
         Ok(feeds) => {
-            let feeds = feeds.into_iter().map(|feed| replace_host(feed)).collect();
+            let feeds = feeds
+                .into_iter()
+                .map(|feed| replace_host(feed))
+                .collect();
             if dry_run {
                 println!("{}",
                          serde_json::to_string(&feeds).expect("Unable to encode feeds into JSON"));
@@ -52,8 +55,14 @@ fn replace_host(feed: fastladder_pixiv::Feed) -> fastladder_pixiv::Feed {
     let mut replaced = feed;
     if let Ok(replace_url_str) = std::env::var("REPLACE_URL") {
         if let Ok(replace_url) = url::Url::parse(&replace_url_str) {
-            replaced.thumb_url.set_host(replace_url.host_str()).expect("Unable to replace host");
-            replaced.thumb_url.set_scheme(replace_url.scheme()).expect("Unable to replace scheme");
+            replaced
+                .thumb_url
+                .set_host(replace_url.host_str())
+                .expect("Unable to replace host");
+            replaced
+                .thumb_url
+                .set_scheme(replace_url.scheme())
+                .expect("Unable to replace scheme");
         }
     }
     return replaced;

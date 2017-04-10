@@ -12,9 +12,9 @@ pub struct Fastladder {
 impl Fastladder {
     pub fn new(base_url: url::Url, api_key: String) -> Fastladder {
         return Fastladder {
-            base_url: base_url,
-            api_key: api_key,
-        };
+                   base_url: base_url,
+                   api_key: api_key,
+               };
     }
 
     pub fn post_feeds(&self, feeds: &Vec<super::Feed>) {
@@ -25,9 +25,14 @@ impl Fastladder {
             .append_pair("feeds",
                          &serde_json::to_string(feeds).expect("Unable to encode feeds into JSON"))
             .finish();
-        let mut res = client.post(url).body(&request_body).send().expect("Failed to get");
+        let mut res = client
+            .post(url)
+            .body(&request_body)
+            .send()
+            .expect("Failed to get");
         let mut response_body = String::new();
-        let _ = res.read_to_string(&mut response_body).expect("Failed to read body");
+        let _ = res.read_to_string(&mut response_body)
+            .expect("Failed to read body");
         if res.status != hyper::status::StatusCode::Ok {
             // TODO: return Result
             panic!(format!("fastladder/rpc/update_feeds returned {}: {}",

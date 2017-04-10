@@ -13,7 +13,8 @@ pub fn bookmark_new_illust(base_url: &url::Url, phpsessid: &str) -> Result<Vec<s
     let client = client;
     let mut res = client.get(url.clone()).header(hyper::header::Cookie(vec![cookie::Cookie::new("PHPSESSID".to_owned(), phpsessid.to_owned())])).send().expect("Failed to get");
     let mut body = String::new();
-    let _ = res.read_to_string(&mut body).expect("Failed to read body");
+    let _ = res.read_to_string(&mut body)
+        .expect("Failed to read body");
     if res.status == hyper::status::StatusCode::Ok {
         let doc = select::document::Document::from(&*body);
         return Ok(super::util::from_image_item(&url, feedtitle, &doc));
