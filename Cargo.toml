@@ -4,7 +4,7 @@ version = "0.1.1"
 authors = ["Kohei Suzuki <eagletmt@gmail.com>"]
 
 [dependencies]
-chrono = "0.2"
+chrono = "0.3"
 clap = "2.23"
 env_logger = "0.3"
 hyper = "0.10"
