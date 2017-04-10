@@ -14,19 +14,20 @@ pub struct Feed {
 }
 
 impl serde::Serialize for Feed {
-    fn serialize<S: serde::Serializer>(&self, serializer: &mut S) -> Result<(), S::Error> {
-        let mut state = try!(serializer.serialize_struct("Feed", 8));
-        try!(serializer.serialize_struct_elt(&mut state, "feedlink", &self.feedlink));
-        try!(serializer.serialize_struct_elt(&mut state, "feedtitle", &self.feedtitle));
-        try!(serializer.serialize_struct_elt(&mut state, "author", &self.author));
-        try!(serializer.serialize_struct_elt(&mut state, "title", &self.title));
-        try!(serializer.serialize_struct_elt(&mut state,
-                                             "body",
-                                             format!("<img src=\"{}\"/>", self.thumb_url)));
-        try!(serializer.serialize_struct_elt(&mut state, "link", &self.link));
-        try!(serializer.serialize_struct_elt(&mut state, "category", &self.category));
-        try!(serializer.serialize_struct_elt(&mut state, "published_date", &self.published_date));
-        try!(serializer.serialize_struct_end(state));
-        return Ok(());
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where S: serde::Serializer
+    {
+        use feed::serde::ser::SerializeStruct;
+
+        let mut struc = try!(serializer.serialize_struct("Feed", 8));
+        try!(struc.serialize_field("feedlink", &self.feedlink));
+        try!(struc.serialize_field("feedtitle", &self.feedtitle));
+        try!(struc.serialize_field("author", &self.author));
+        try!(struc.serialize_field("title", &self.title));
+        try!(struc.serialize_field("body", &format!("<img src=\"{}\"/>", self.thumb_url)));
+        try!(struc.serialize_field("link", &self.link));
+        try!(struc.serialize_field("category", &self.category));
+        try!(struc.serialize_field("published_date", &self.published_date));
+        struc.end()
     }
 }
