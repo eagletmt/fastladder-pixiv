@@ -1,5 +1,4 @@
 extern crate chrono;
-extern crate cookie;
 extern crate hyper;
 extern crate regex;
 extern crate select;

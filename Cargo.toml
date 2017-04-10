@@ -5,14 +5,13 @@ authors = ["Kohei Suzuki <eagletmt@gmail.com>"]
 
 [dependencies]
 chrono = "0.2"
-clap = "2.19"
-cookie = "0.2"
+clap = "2.23"
 env_logger = "0.3"
-hyper = "0.9"
+hyper = "0.10"
 lazy_static = "0.2"
 log = "0.3"
 regex = "0.2"
 select = "0.3"
 serde = "0.8"
 serde_json = "0.8"
-url = "1.2"
+url = "1.4"
