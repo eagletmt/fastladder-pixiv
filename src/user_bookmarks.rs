@@ -23,26 +23,26 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Re
     if res.status == hyper::status::StatusCode::Ok {
         let doc = select::document::Document::from(&*body);
         let mut feeds = Vec::new();
-        for li in doc.find(select::predicate::Class("image-item")).iter() {
+        for li in doc.find(select::predicate::Class("image-item")) {
             let title_node = li.find(select::predicate::Class("title"))
-                .first()
+                .next()
                 .expect("Unable to find title node");
             let title = title_node.text();
             let thumb_node = li.find(select::predicate::Name("img"))
-                .first()
+                .next()
                 .expect("Unable to find thumbnail node");
             let thumb = thumb_node
                 .attr("data-src")
                 .expect("data-src does not exist in thumbnail node");
             let thumb_url = url::Url::parse(thumb).expect("data-src in thumbnail node is unparsable");
             if let Some(link_node) = li.find(select::predicate::Class("work").and(select::predicate::Name("a")))
-                   .first() {
+                   .next() {
                 let link = url.join(link_node
                                         .attr("href")
                                         .expect("href does not exist in a.work node"))
                     .expect("Unable to join href in a.work node");
                 let user_node = li.find(select::predicate::Class("user"))
-                    .first()
+                    .next()
                     .expect("Unable to find user node");
                 let user = user_node
                     .attr("data-user_name")
