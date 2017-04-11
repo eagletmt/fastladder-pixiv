@@ -10,21 +10,28 @@ use std::io::Write;
 fn main() {
     env_logger::init().unwrap();
 
-    let app = clap_app!(fastladder_pixiv =>
-        (version: "0.1.1")
-        (about: "Post pixiv feeds to fastladder")
-        (@arg dry_run: -n "dry-run")
-        (@subcommand word =>
-            (about: "Search illustrations by tag")
-            (@arg WORD: +required +multiple "Word"))
-        (@subcommand bookmark =>
-            (about: "Get new illustrations from following users"))
-        (@subcommand user =>
-            (about: "Get new illustrations from user's bookmark")
-            (@arg USER_ID: +required +multiple "user id"))
-    );
+    let app = clap::App::new("fastladder-pixiv")
+        .version(crate_version!())
+        .about("Post pixiv feeds to fastladder")
+        .arg(clap::Arg::with_name("dry-run")
+                 .long("dry-run")
+                 .short("n")
+                 .help("dry-run"))
+        .subcommand(clap::SubCommand::with_name("word")
+                        .about("Search illustrations by tag")
+                        .arg(clap::Arg::with_name("WORD")
+                                 .required(true)
+                                 .multiple(true)
+                                 .help("Word")))
+        .subcommand(clap::SubCommand::with_name("bookmark").about("Get new illustrations from following users"))
+        .subcommand(clap::SubCommand::with_name("user")
+                        .about("Get new illustrations from user's bookmark")
+                        .arg(clap::Arg::with_name("USER_ID")
+                                 .required(true)
+                                 .multiple(true)
+                                 .help("user id")));
     let matches = app.clone().get_matches();
-    let dry_run = matches.is_present("dry_run");
+    let dry_run = matches.is_present("dry-run");
     let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
 
     match run_subcommand(&base_url, &app, matches.subcommand()) {
