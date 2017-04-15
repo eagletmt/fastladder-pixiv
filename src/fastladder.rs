@@ -1,5 +1,5 @@
 extern crate hyper;
-extern crate hyper_native_tls;
+extern crate hyper_rustls;
 extern crate serde_json;
 extern crate url;
 
@@ -19,7 +19,7 @@ impl Fastladder {
     }
 
     pub fn post_feeds(&self, feeds: &Vec<super::Feed>) {
-        let tls = hyper_native_tls::NativeTlsClient::new().unwrap();
+        let tls = hyper_rustls::TlsClient::new();
         let client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(tls));
         let url = self.base_url.join("/rpc/update_feeds").unwrap();
         let request_body = url::form_urlencoded::Serializer::new(String::new())
