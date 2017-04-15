@@ -1,6 +1,6 @@
 [package]
 name = "fastladder-pixiv"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Kohei Suzuki <eagletmt@gmail.com>"]
 
 [dependencies]
