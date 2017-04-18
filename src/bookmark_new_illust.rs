@@ -1,4 +1,5 @@
 extern crate hyper;
+extern crate hyper_rustls;
 extern crate select;
 extern crate url;
 
@@ -7,7 +8,8 @@ use std::io::Read;
 pub fn bookmark_new_illust(base_url: &url::Url, phpsessid: &str) -> Result<Vec<super::Feed>, String> {
     let url = base_url.join("/bookmark_new_illust.php").unwrap();
     let feedtitle = "PxFeed - bookmark new illust";
-    let mut client = hyper::Client::new();
+    let tls = hyper_rustls::TlsClient::new();
+    let mut client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(tls));
     client.set_redirect_policy(hyper::client::RedirectPolicy::FollowNone);
     let client = client;
     let mut res = client

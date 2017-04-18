@@ -1,4 +1,5 @@
 extern crate hyper;
+extern crate hyper_rustls;
 extern crate select;
 extern crate url;
 
@@ -10,7 +11,8 @@ pub fn search_by_tag(base_url: &url::Url, word: &str) -> Result<Vec<super::Feed>
         .append_pair("s_mode", "s_tag")
         .append_pair("word", &word);
     let feedtitle = format!("PxFeed - {}", word);
-    let mut client = hyper::Client::new();
+    let tls = hyper_rustls::TlsClient::new();
+    let mut client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(tls));
     client.set_redirect_policy(hyper::client::RedirectPolicy::FollowNone);
     let client = client;
     let mut res = client.get(url.clone()).send().expect("Failed to get");

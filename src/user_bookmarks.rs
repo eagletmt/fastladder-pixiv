@@ -1,4 +1,5 @@
 extern crate hyper;
+extern crate hyper_rustls;
 extern crate select;
 extern crate url;
 
@@ -9,7 +10,8 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Re
     let mut url = base_url.join("/bookmark.php").unwrap();
     url.query_pairs_mut().append_pair("id", user_id);
     let feedtitle = format!("PxFeed - Bookmarks by {}", user_id);
-    let mut client = hyper::Client::new();
+    let tls = hyper_rustls::TlsClient::new();
+    let mut client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(tls));
     client.set_redirect_policy(hyper::client::RedirectPolicy::FollowNone);
     let client = client;
     let mut res = client

@@ -32,7 +32,7 @@ fn main() {
                                  .help("user id")));
     let matches = app.clone().get_matches();
     let dry_run = matches.is_present("dry-run");
-    let base_url = url::Url::parse("http://www.pixiv.net").unwrap();
+    let base_url = url::Url::parse("https://www.pixiv.net").unwrap();
 
     match run_subcommand(&base_url, &app, matches.subcommand()) {
         Ok(feeds) => {
