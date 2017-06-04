@@ -19,12 +19,13 @@ impl serde::Serialize for Feed {
     {
         use feed::serde::ser::SerializeStruct;
 
+        let imgurl = self.thumb_url.as_str().replace("150x150", "600x600");
         let mut struc = try!(serializer.serialize_struct("Feed", 8));
         try!(struc.serialize_field("feedlink", &self.feedlink));
         try!(struc.serialize_field("feedtitle", &self.feedtitle));
         try!(struc.serialize_field("author", &self.author));
         try!(struc.serialize_field("title", &self.title));
-        try!(struc.serialize_field("body", &format!("<img src=\"{}\"/>", self.thumb_url)));
+        try!(struc.serialize_field("body", &format!("<img src=\"{}\"/>", imgurl)));
         try!(struc.serialize_field("link", &self.link));
         try!(struc.serialize_field("category", &self.category));
         try!(struc.serialize_field("published_date", &self.published_date));
