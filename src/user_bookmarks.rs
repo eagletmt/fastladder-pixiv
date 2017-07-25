@@ -45,22 +45,27 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Re
                 let link = url.join(link_node.attr("href").expect(
                     "href does not exist in a.work node",
                 )).expect("Unable to join href in a.work node");
-                let user_node = li.find(select::predicate::Class("user")).next().expect(
-                    "Unable to find user node",
-                );
-                let user = user_node.attr("data-user_name").expect(
-                    "data-user_name does not exist in user node",
-                );
-                feeds.push(super::Feed {
-                    feedlink: url.to_string(),
-                    feedtitle: feedtitle.to_owned(),
-                    author: user.to_owned(),
-                    title: title,
-                    thumb_url: thumb_url,
-                    link: link.to_string(),
-                    category: "PxFeed".to_owned(),
-                    published_date: super::util::extract_pubdate(thumb).to_string(),
-                });
+                if let Some(user_node) = li.find(select::predicate::Class("user")).next() {
+                    let user = user_node.attr("data-user_name").expect(
+                        "data-user_name does not exist in user node",
+                    );
+                    feeds.push(super::Feed {
+                        feedlink: url.to_string(),
+                        feedtitle: feedtitle.to_owned(),
+                        author: user.to_owned(),
+                        title: title,
+                        thumb_url: thumb_url,
+                        link: link.to_string(),
+                        category: "PxFeed".to_owned(),
+                        published_date: super::util::extract_pubdate(thumb).to_string(),
+                    });
+                } else {
+                    warn!(
+                        "Found invisible illustration {} in user_id={}",
+                        link,
+                        user_id
+                    );
+                }
             } else {
                 warn!(
                     "Found invisible illustration at {}",
