@@ -15,7 +15,8 @@ pub struct Feed {
 
 impl serde::Serialize for Feed {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where S: serde::Serializer
+    where
+        S: serde::Serializer,
     {
         use feed::serde::ser::SerializeStruct;
 
@@ -25,10 +26,16 @@ impl serde::Serialize for Feed {
         try!(struc.serialize_field("feedtitle", &self.feedtitle));
         try!(struc.serialize_field("author", &self.author));
         try!(struc.serialize_field("title", &self.title));
-        try!(struc.serialize_field("body", &format!("<img src=\"{}\"/>", imgurl)));
+        try!(struc.serialize_field(
+            "body",
+            &format!("<img src=\"{}\"/>", imgurl),
+        ));
         try!(struc.serialize_field("link", &self.link));
         try!(struc.serialize_field("category", &self.category));
-        try!(struc.serialize_field("published_date", &self.published_date));
+        try!(struc.serialize_field(
+            "published_date",
+            &self.published_date,
+        ));
         struc.end()
     }
 }
