@@ -1,6 +1,6 @@
 # Maintainer: Kohei Suzuki <eagletmt@gmail.com>
 pkgname=fastladder-pixiv
-pkgver=0.2.2
+pkgver=0.2.3
 pkgrel=1
 arch=('i686' 'x86_64')
 url='https://github.com/eagletmt/fastladder-pixiv'
@@ -19,4 +19,4 @@ package() {
   install -m755 target/release/$pkgname "$pkgdir/usr/bin/"
 }
 
-sha512sums=('8689dc1eb12cd439fc4ee3c94b9eb90959fe6d07701b079a7dde6fb83b0c55b2b7f880d263e377378c04e598403a5b9b47c54e5cb23bbd604f0344c983a5a86c')
+sha512sums=('9ad83a835faffc968e7f63ad771f25a3d35420f85041fff3f8a36643f6fca3f72e83330c8858b48a4d2d53c3536bf8aef41af55126f2d4cceb48f99291cd340b')
