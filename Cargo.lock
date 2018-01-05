@@ -119,7 +119,7 @@ dependencies = [
 
 [[package]]
 name = "fastladder-pixiv"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "chrono 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "clap 2.29.0 (registry+https://github.com/rust-lang/crates.io-index)",
