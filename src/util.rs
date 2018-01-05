@@ -5,7 +5,6 @@ extern crate serde_json;
 extern crate url;
 
 use chrono::TimeZone;
-use select::predicate::Predicate;
 
 pub fn extract_pubdate(thumb: &str) -> chrono::DateTime<chrono::Local> {
     lazy_static! {
@@ -32,53 +31,8 @@ pub fn extract_pubdate(thumb: &str) -> chrono::DateTime<chrono::Local> {
     }
 }
 
-pub fn from_image_item(url: &url::Url, feedtitle: &str, doc: &select::document::Document) -> Vec<super::Feed> {
-    let mut feeds = Vec::new();
-    for li in doc.find(select::predicate::Class("image-item")) {
-        let title_node = li.find(select::predicate::Class("title")).next().expect(
-            "Unable to find title node",
-        );
-        let title = title_node.attr("title").expect(
-            "title attribute does not exist in title node",
-        );
-        let thumb_node = li.find(select::predicate::Class("_thumbnail"))
-            .next()
-            .expect("Unable to find thumbnail node");
-        let thumb = thumb_node.attr("data-src").expect(
-            "data-src attribute does not exist in thumbnail node",
-        );
-        let thumb_url = url::Url::parse(thumb).expect("data-src in thumbnail node is unparsable");
-        let user_node = li.find(select::predicate::Class("user")).next().expect(
-            "Unable to find user node",
-        );
-        let user = user_node.attr("title").expect(
-            "title attribute does not exist in user node",
-        );
-        let link_node = li.find(select::predicate::Class("work").and(
-            select::predicate::Name("a"),
-        )).next()
-            .expect("Unable to find a.work node");
-        let link = url.join(link_node.attr("href").expect(
-            "href does not exist in a.work node",
-        )).expect("Unable to join href in a.work node");
-        let pubdate = super::util::extract_pubdate(thumb);
-        let feed = super::Feed {
-            feedlink: url.to_string(),
-            feedtitle: feedtitle.to_owned(),
-            author: user.to_owned(),
-            title: title.to_owned(),
-            thumb_url: thumb_url,
-            link: link.to_string(),
-            category: "PxFeed".to_owned(),
-            published_date: pubdate.to_string(),
-        };
-        feeds.push(feed)
-    }
-    return feeds;
-}
-
 #[derive(Debug, Deserialize)]
-struct SearchResultItem {
+struct IllustItem {
     #[serde(rename = "illustId")]
     illust_id: String,
     #[serde(rename = "illustTitle")]
@@ -87,7 +41,7 @@ struct SearchResultItem {
     user_name: String,
     url: String,
 }
-impl SearchResultItem {
+impl IllustItem {
     fn illust_url(&self) -> String {
         format!(
             "https://www.pixiv.net/member_illust.php?mode=medium&illust_id={}",
@@ -96,9 +50,16 @@ impl SearchResultItem {
     }
 }
 
+pub fn from_image_item(url: &url::Url, feedtitle: &str, doc: &select::document::Document) -> Vec<super::Feed> {
+    from_data_items(url, feedtitle, doc, "js-mount-point-latest-following")
+}
+
 pub fn from_search_result(url: &url::Url, feedtitle: &str, doc: &select::document::Document) -> Vec<super::Feed> {
+    from_data_items(url, feedtitle, doc, "js-mount-point-search-result-list")
+}
+
+fn from_data_items(url: &url::Url, feedtitle: &str, doc: &select::document::Document, id: &str) -> Vec<super::Feed> {
     let mut feeds = Vec::new();
-    let id = "js-mount-point-search-result-list";
     let div = doc.find(select::predicate::Attr("id", id)).next().expect(
         &format!(
             "Cannot find element with id={}",
@@ -109,7 +70,7 @@ pub fn from_search_result(url: &url::Url, feedtitle: &str, doc: &select::documen
         "Cannot find data-items attribute in {}",
         id,
     ));
-    let result: Result<Vec<SearchResultItem>, _> = serde_json::from_str(&items);
+    let result: Result<Vec<IllustItem>, _> = serde_json::from_str(&items);
     match result {
         Ok(items) => {
             for item in items {
@@ -132,5 +93,5 @@ pub fn from_search_result(url: &url::Url, feedtitle: &str, doc: &select::documen
             panic!("Cannot parse data-items: {}", e);
         }
     };
-    return feeds;
+    feeds
 }
