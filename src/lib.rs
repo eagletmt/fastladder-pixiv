@@ -1,6 +1,6 @@
 extern crate chrono;
-extern crate hyper;
 extern crate regex;
+extern crate reqwest;
 extern crate select;
 extern crate serde_json;
 extern crate url;

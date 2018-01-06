@@ -1,5 +1,4 @@
-extern crate hyper;
-extern crate hyper_rustls;
+extern crate reqwest;
 extern crate select;
 extern crate url;
 
@@ -10,20 +9,18 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Re
     let mut url = base_url.join("/bookmark.php").unwrap();
     url.query_pairs_mut().append_pair("id", user_id);
     let feedtitle = format!("PxFeed - Bookmarks by {}", user_id);
-    let tls = hyper_rustls::TlsClient::new();
-    let mut client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(tls));
-    client.set_redirect_policy(hyper::client::RedirectPolicy::FollowNone);
-    let client = client;
-    let mut res = client
-        .get(url.clone())
-        .header(hyper::header::Cookie(
-            vec![format!("PHPSESSID={}", phpsessid)],
-        ))
-        .send()
-        .expect("Failed to get");
+    let client = reqwest::ClientBuilder::new()
+        .redirect(reqwest::RedirectPolicy::none())
+        .build()
+        .expect("Failed to build reqwest::Client");
+    let mut cookie = reqwest::header::Cookie::new();
+    cookie.set("PHPSESSID".to_owned(), phpsessid.to_owned());
+    let mut res = client.get(url.clone()).header(cookie).send().expect(
+        "Failed to get",
+    );
     let mut body = String::new();
     let _ = res.read_to_string(&mut body).expect("Failed to read body");
-    if res.status == hyper::status::StatusCode::Ok {
+    if res.status().is_success() {
         let doc = select::document::Document::from(&*body);
         let mut feeds = Vec::new();
         for li in doc.find(select::predicate::Class("image-item")) {
@@ -78,7 +75,7 @@ pub fn user_bookmarks(base_url: &url::Url, phpsessid: &str, user_id: &str) -> Re
         // TODO: return Result
         return Err(format!(
             "fastladder/rpc/update_feeds returned {}: {}",
-            res.status,
+            res.status(),
             body
         ));
     }
